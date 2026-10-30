@@ -1,0 +1,44 @@
+services:
+
+  telemetry-db:
+    image: postgres:18
+    container_name: telemetry-db
+    environment:
+      POSTGRES_DB: telemetry_db
+      POSTGRES_USER: telemetry_user
+      POSTGRES_PASSWORD: telemetry_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - telemetry-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U telemetry_user -d telemetry_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  telemetry-service:
+    build:
+      context: .
+      dockerfile: telemetry-service/Dockerfile
+    container_name: telemetry-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://telemetry-db:5432/telemetry_db
+      SPRING_DATASOURCE_USERNAME: telemetry_user
+      SPRING_DATASOURCE_PASSWORD: telemetry_password
+    depends_on:
+      telemetry-db:
+        condition: service_healthy
+
+  vehicle-analysis-service:
+    build:
+      context: .
+      dockerfile: vehicle-analysis-service/Dockerfile
+    container_name: vehicle-analysis-service
+    ports:
+      - "8082:8082"
+
+volumes:
+  telemetry-data:
