@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/recalls/VF1ABC12345678901"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": [
+      {
+        "campaignId": "RCL-001",
+        "component": "BRAKING_SYSTEM",
+        "description": "Brake system recall"
+      }
+    ]
+  }
+}

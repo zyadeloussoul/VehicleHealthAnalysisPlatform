@@ -1,5 +1,8 @@
 services:
 
+  # =========================================================
+  # TELEMETRY DATABASE
+  # =========================================================
   telemetry-db:
     image: postgres:18
     container_name: telemetry-db
@@ -22,7 +25,9 @@ services:
       retries: 5
 
 
-
+  # =========================================================
+  # VEHICLE ANALYSIS DATABASE
+  # =========================================================
   analysis-db:
     image: postgres:18
     container_name: analysis-db
@@ -45,7 +50,9 @@ services:
       retries: 5
 
 
-
+  # =========================================================
+  # APACHE KAFKA - SINGLE NODE / KRAFT
+  # =========================================================
   kafka:
     image: apache/kafka:4.1.0
     container_name: kafka
@@ -84,7 +91,23 @@ services:
       - kafka-data:/var/lib/kafka/data
 
 
+  # =========================================================
+  # EXTERNAL RECALL API MOCK
+  # =========================================================
+  recall-api-mock:
+    image: wiremock/wiremock:3.13.2
+    container_name: recall-api-mock
 
+    ports:
+      - "8090:8080"
+
+    volumes:
+      - ./wiremock:/home/wiremock
+
+
+  # =========================================================
+  # TELEMETRY SERVICE
+  # =========================================================
   telemetry-service:
     build:
       context: .
@@ -109,6 +132,10 @@ services:
       kafka:
         condition: service_started
 
+
+  # =========================================================
+  # VEHICLE ANALYSIS SERVICE
+  # =========================================================
   vehicle-analysis-service:
     build:
       context: .
@@ -126,13 +153,26 @@ services:
 
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
+      EXTERNAL_RECALL_API_BASE_URL: http://recall-api-mock:8080
+
     depends_on:
       analysis-db:
         condition: service_healthy
 
       kafka:
         condition: service_started
+
+      recall-api-mock:
+        condition: service_started
+
+
+# =========================================================
+# PERSISTENT VOLUMES
+# =========================================================
 volumes:
+
   telemetry-data:
+
   analysis-data:
+
   kafka-data:
