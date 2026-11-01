@@ -29,7 +29,7 @@ services:
   # VEHICLE ANALYSIS DATABASE
   # =========================================================
   analysis-db:
-    image: postgres:18
+    image: postgres:latest
     container_name: analysis-db
 
     environment:
