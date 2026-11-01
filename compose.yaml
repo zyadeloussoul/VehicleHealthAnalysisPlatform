@@ -16,7 +16,7 @@ services:
       - "5433:5432"
 
     volumes:
-      - telemetry-data:/var/lib/postgresql/data
+      - telemetry-data:/var/lib/postgresql
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U telemetry_user -d telemetry_db"]
@@ -29,7 +29,7 @@ services:
   # VEHICLE ANALYSIS DATABASE
   # =========================================================
   analysis-db:
-    image: postgres:latest
+    image: postgres:18
     container_name: analysis-db
 
     environment:
@@ -41,7 +41,7 @@ services:
       - "5434:5432"
 
     volumes:
-      - analysis-data:/var/lib/postgresql/data
+      - analysis-data:/var/lib/postgresql
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U analysis_user -d vehicle_analysis_db"]
